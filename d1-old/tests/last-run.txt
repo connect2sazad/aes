@@ -1,0 +1,42 @@
+PASS: Public page renders against real MariaDB
+PASS: Security headers sent
+PASS: Session cookie flags
+PASS: Document root excludes config and CLI scripts
+PASS: Unauthenticated admin renders only login
+PASS: Unauthenticated and CSRF-free write rejected
+PASS: SQL injection cannot authenticate
+PASS: Admin password login succeeds
+PASS: Authenticated dashboard visible
+PASS: CSRF token rotates after login
+PASS: Main page content saves atomically
+PASS: Content and email link reflect database update
+PASS: Unsafe contact link value rejected
+PASS: Valid anonymous CSRF cannot bypass admin authentication
+PASS: Authenticated write requires valid CSRF
+PASS: Draft post saved
+PASS: Draft not disclosed publicly
+PASS: Post edit and publication succeeds
+PASS: Stored script rendered as escaped text
+PASS: Real multipart photo upload accepted and normalized
+PASS: Upload renamed to random JPEG
+PASS: Draft image inaccessible to anonymous visitors
+PASS: Admin can preview draft image
+PASS: Published photo publicly available
+PASS: Disguised executable upload rejected
+PASS: Media path traversal rejected
+PASS: Review publication succeeds
+PASS: Published review visible
+PASS: Visitor enquiry saves to database
+PASS: Enquiry persisted with honest email state
+PASS: Enquiry inbox escapes visitor text
+PASS: Consent enforced on server
+PASS: Invalid email rejected on server
+PASS: Honeypot blocks spam submission
+PASS: Public enquiry rate limit enforced
+PASS: Enquiry follow-up status updates
+PASS: Enquiry deletion succeeds
+PASS: Post deletion succeeds
+PASS: Logout revokes access
+PASS: Login brute-force throttling enforced
+
+40 checks passed on real local MariaDB and HTTP.

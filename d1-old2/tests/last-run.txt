@@ -1,0 +1,73 @@
+PASS: Public page renders against real MariaDB
+PASS: Security headers sent
+PASS: Session cookie flags
+PASS: Document root excludes config and CLI scripts
+PASS: Unauthenticated admin renders only login
+PASS: Unauthenticated and CSRF-free write rejected
+PASS: SQL injection cannot authenticate
+PASS: Admin password login succeeds
+PASS: Authenticated dashboard visible
+PASS: CSRF token rotates after login
+PASS: Main page content saves atomically
+PASS: Content and email link reflect database update
+PASS: Unsafe contact link value rejected
+PASS: Valid anonymous CSRF cannot bypass admin authentication
+PASS: Authenticated write requires valid CSRF
+PASS: Draft post saved
+PASS: Draft not disclosed publicly
+PASS: Post edit and publication succeeds
+PASS: Stored script rendered as escaped text
+PASS: Real multipart photo upload accepted and normalized
+PASS: Upload renamed to random JPEG
+PASS: Draft image inaccessible to anonymous visitors
+PASS: Draft project detail page remains private
+PASS: Draft project excluded from sitemap
+PASS: Admin can preview draft image
+PASS: Published photo publicly available
+PASS: Two photos uploaded in one request and appended
+PASS: Original photo preserved alongside new photos
+PASS: Published gallery photo publicly accessible
+PASS: Published gallery photo publicly accessible
+PASS: Published gallery photo publicly accessible
+PASS: Cover selection and photo alt text saved
+PASS: Selected photo becomes project cover
+PASS: Project detail renders every photo and saved alt text
+PASS: Individual photo can be removed
+PASS: Removed image immediately unavailable to public
+PASS: Removing all project photos is rejected
+PASS: Foreign cover IDs rejected
+PASS: Foreign photo removals rejected
+PASS: Oversized photo batch rejected
+PASS: SEO text, indexing, verification and social image saved
+PASS: SEO title and description escaped in real page head
+PASS: Canonical URL rendered
+PASS: Social sharing metadata rendered
+PASS: Search Console verification rendered
+PASS: SEO sharing image publicly retrievable
+PASS: Privacy page SEO applied separately
+PASS: Valid sitemap includes published project URL
+PASS: Crawler guidance uses configured canonical domain
+PASS: Disable indexing applies to homepage and project pages
+PASS: Index-disabled sitemap contains no URLs
+PASS: Unsafe canonical scheme rejected
+PASS: HTML verification injection rejected
+PASS: SEO mutations require valid CSRF
+PASS: Disguised executable upload rejected
+PASS: Mixed valid/invalid batch rolls back files and database
+PASS: Media path traversal rejected
+PASS: Review publication succeeds
+PASS: Published review visible
+PASS: Visitor enquiry saves to database
+PASS: Enquiry persisted with honest email state
+PASS: Enquiry inbox escapes visitor text
+PASS: Consent enforced on server
+PASS: Invalid email rejected on server
+PASS: Honeypot blocks spam submission
+PASS: Public enquiry rate limit enforced
+PASS: Enquiry follow-up status updates
+PASS: Enquiry deletion succeeds
+PASS: Post deletion succeeds
+PASS: Logout revokes access
+PASS: Login brute-force throttling enforced
+
+71 checks passed on real local MariaDB and HTTP.

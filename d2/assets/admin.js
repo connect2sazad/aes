@@ -1,0 +1,3 @@
+document.querySelectorAll('.delete-form').forEach(form=>form.addEventListener('submit',event=>{if(!confirm('Permanently delete this record?'))event.preventDefault();}));
+document.querySelectorAll('.copy-caption').forEach(button=>button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(button.dataset.caption);button.textContent='Caption copied';}catch{button.textContent='Select and copy the post text above';}}));
+document.querySelectorAll('.facebook-share').forEach(link=>{link.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(new URL('index.php?page=updates',location.href).href);});

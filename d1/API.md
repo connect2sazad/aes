@@ -1,0 +1,54 @@
+# Request contract
+
+All endpoints are same-origin. No permissive CORS. Responses are server-rendered HTML with 303 Post/Redirect/Get after successful writes. Public text is escaped, never interpreted as HTML. Mutations use POST with a session-bound `csrf` form field. Invalid CSRF returns 403; rate limits return 429 with Retry-After; infrastructure failures return a generic 503.
+
+| Endpoint | Access | Behavior |
+| --- | --- | --- |
+| GET `/` | Public | Published content, projects, posts, reviews; new session/CSRF field |
+| POST `/` | Public + CSRF | `name` (100), `phone` (30), optional `email` (190), service allowlist, `message` (3000), `consent=yes`, empty `website` honeypot. Persists enquiry, optional fixed-recipient mail notification. 5 attempts/IP/hour. Validation errors render feedback. |
+| GET `/privacy.php` | Public | Privacy notice |
+| GET `/media.php?file=...` | Public for published image; otherwise admin | Only random 48-hex JPEG filename. Returns JPEG or 404; no filesystem paths accepted. |
+| GET `/admin.php` | Public login / authenticated admin | Overview or login; no-store |
+| POST `/admin.php`, `action=login` | CSRF | Email/password, max 8 attempts/IP/15 minutes; generic failed credential message. Successful login rotates session ID and CSRF. |
+| POST `/admin.php`, `action=logout` | Admin + CSRF | Destroy session |
+| POST `/admin.php?tab=content`, `action=content` | Admin + CSRF | Existing content keys only, contact validation, atomic update |
+| POST `/admin.php?tab=projects`, `action=save` | Admin + CSRF | Create or edit by `id` (0=create), title/category/location/description, optional replacement photo; photo required at creation, allowlisted category Solar/Electrical. `published` checkbox controls visibility. |
+| POST `/admin.php?tab=reviews`, `action=save` | Admin + CSRF | Customer/location/quote/rating 1–5, permission confirmation, optional publication |
+| POST `/admin.php?tab=posts`, `action=save` | Admin + CSRF | Title/body/optional photo/publication; website only |
+| POST entity tab, `action=delete` | Admin + CSRF | Delete by numeric `id`; permanent; orphaned photo removed by maintenance |
+| POST `/admin.php?tab=enquiries`, `action=status` | Admin + CSRF | `id`, status new/contacted/closed |
+| POST `/admin.php?tab=security`, `action=password` | Admin + CSRF | Current password plus new password 14–200 characters; invalidates other sessions |
+
+Uploads: JPEG/PNG/WebP only, actual decoded type checked, <=5 MB and <=20 megapixels, normalized to JPEG <=1800 px wide. Stored outside document root with random names; draft media is not public. PHP/server size limits also apply.
+
+## Gallery / SEO contract additions
+
+- Project saves accept multipart `photos[]` (multiple), `cover_photo` (existing photo ID), `remove_photos[]` and `alt[photo_id]`. Photos are appended; IDs must belong to that project. Result must have 1–12 images. A failed batch rolls back records and newly created image files. Legacy single-file `photo` requests are still accepted for compatibility.
+- GET `/project.php?id=<positive integer>`: published project with all gallery photos, cover first; drafts and missing records return 404.
+- POST `/admin.php?tab=seo`, `action=seo`: admin + CSRF. Title/description fields for home/privacy, optional social text/image, root canonical URL, verification token, indexing checkbox. All text escaped; canonical schemes restricted; raw HTML/script verification rejected.
+- GET `/sitemap.php`: XML of canonical public home/privacy/published project URLs, empty when indexing is disabled.
+- GET `/robots.php`: plain-text crawler guidance, with sitemap URL when indexing is enabled. Apache aliases are in `.htaccess`; Nginx routing is documented in `UPGRADE.md`.
+
+## Subfolder routing, help and publishing additions
+
+All browser paths are generated with appUrl() and installation-prefix detection. The public endpoints listed above are relative to the app's public directory, not the server root. Redirects follow the same rule. SEO canonical URLs may include an installation subfolder; credentials, query strings, fragments and non-HTTP(S) schemes remain rejected.
+
+GET admin.php?tab=help requires administrator login and displays the user handbook and installation checks. GET admin.php?tab=social requires login and displays public profile settings, configured account status, queue controls and publishing history. Account tokens are never returned in HTML.
+
+POST admin.php?tab=social supports these admin+CSRF actions:
+
+- profiles: optional facebook/instagram/linkedin/youtube/x URLs; HTTPS and exact provider-host validation, blank removes the public link.
+- account: channel facebook/instagram, numeric account_id, password-field access_token, optional enabled. A blank token retains the existing token only when account ID is unchanged. Stored token uses AES-256-GCM and the private app_key.
+- disconnect: channel; removes credentials and cancels pending jobs for that channel.
+- queue: published website post_id and channel. Freezes caption/photo, creates one job per post/network, validates account/image/caption requirements. Duplicate jobs are rejected. No provider request is made by the web form.
+- cancel: job_id; only pending/failed jobs can be cancelled this way.
+- retry: job_id plus checked_account=yes; failed/needs_review only; explicit verification of non-publication required.
+- resolve: job_id plus checked_account=yes; needs_review only; marks already-published content as manually verified.
+
+CLI bin/publish-social.php processes up to five due jobs using a database advisory lock. Statuses: pending, processing, sent, failed, needs_review, cancelled. Instagram creates a container, checks status and publishes only when ready; IN_PROGRESS defers with the saved container. Ambiguous network/5xx write outcomes require manual review and are not automatically retried. Deleting a website post preserves history via nullable post_id; pending jobs are cancelled when the worker sees that the website post no longer exists.
+
+Stored job captions are immutable snapshots. Existing social posts are not edited/deleted through website CRUD. Each network has its own result and provider ID. Media serving permits pending/processing/review snapshot photos only while their parent website post remains published. Unreferenced files are removed by daily maintenance after 24 hours.
+
+## Demo content contract
+
+CLI bin/demo.php seed|purge|status manages explicitly tagged fictional fixtures. Schema migration adds nullable demo_key columns to projects/posts/reviews/enquiries and a demo_assets ownership table. Seed is idempotent by unique demo key and does not overwrite original company content; purge removes tagged rows only and checks all image references before deleting demo-owned files. All sample reviews are labelled fictional, enquiry contacts are reserved placeholders, and published samples trigger a public demo notice. Social queueing and worker execution refuse flagged demo posts. No demo creation/deletion endpoint is exposed over HTTP.

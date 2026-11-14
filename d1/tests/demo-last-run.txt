@@ -1,0 +1,32 @@
+PASS: Seed creates expected demo projects
+PASS: Seed creates expected demo posts
+PASS: Seed creates expected demo reviews
+PASS: Seed creates expected demo enquiries
+PASS: Seed leaves original company and contact content unchanged
+PASS: Repeated seed preserves project IDs
+PASS: Repeated seed does not duplicate the nine gallery images
+PASS: Every demo project has three gallery photos
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Generated demo illustration is a valid JPEG
+PASS: Every fictional review is visibly labelled
+PASS: Enquiries use reserved fictional contacts and no notification state
+PASS: Demo posts cannot be queued to real social accounts
+PASS: Public page displays the demo notice and labelled records
+PASS: Footer includes the requested developer credit and link
+PASS: Purge removes tagged demo projects
+PASS: Purge removes tagged demo posts
+PASS: Purge removes tagged demo reviews
+PASS: Purge removes tagged demo enquiries
+PASS: Purge preserves untagged real records
+PASS: Purge preserves a demo image still referenced by a real record
+PASS: A later purge removes unused demo images without touching other files
+PASS: Demo notice disappears after demo records are removed
+
+30 demo/credit checks passed on real local MariaDB and HTTP.

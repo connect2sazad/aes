@@ -1,0 +1,50 @@
+PASS: Nested homepage serves successfully
+PASS: Nested CSS and internal links retain installation prefix
+PASS: Nested CSS and JavaScript load
+PASS: Rendered homepage has no root-escaping local URL
+PASS: Login redirects to nested admin URL
+PASS: Session cookie is scoped to this installation
+PASS: Nested admin tab renders: dashboard
+PASS: Nested admin tab renders: content
+PASS: Nested admin tab renders: projects
+PASS: Nested admin tab renders: reviews
+PASS: Nested admin tab renders: posts
+PASS: Nested admin tab renders: enquiries
+PASS: Nested admin tab renders: seo
+PASS: Nested admin tab renders: social
+PASS: Nested admin tab renders: help
+PASS: Nested admin tab renders: security
+PASS: Help search, printable guide and installation checks are present
+PASS: SEO saves successfully and keeps subfolder redirect
+PASS: Canonical URL accepts and renders a subfolder
+PASS: Sitemap and crawler guidance retain public subfolder
+PASS: Five public social profiles save from admin
+PASS: Configured social links render publicly
+PASS: Social links reject lookalike hosts
+PASS: Social links reject executable schemes
+PASS: Social settings require valid CSRF
+PASS: Facebook publishing credentials save through admin
+PASS: Access token encrypted at rest and decrypts only server-side
+PASS: Stored access token never rendered back to admin
+PASS: Facebook job queues through admin
+PASS: Duplicate network job rejected
+PASS: Real HTTP worker records Facebook text publication from simulated provider
+PASS: Sent job never resent by a later worker run
+PASS: Instagram photo job queues
+PASS: Instagram create/status/publish flow runs over real HTTP against simulated provider
+PASS: Expired token produces actionable failed state
+PASS: Ambiguous provider write failure requires review
+PASS: Uncertain publication never automatically retried
+PASS: Retry requires explicit account verification
+PASS: Administrator can explicitly retry a checked job
+PASS: Checked retry can complete after recovery
+PASS: Instagram processing retains container and defers publication
+PASS: Deferred Instagram job resumes existing container without recreating it
+PASS: Unpublished website post cancels pending social job
+PASS: Deleting website post preserves and cancels its publishing history
+PASS: Instagram text-only job rejected before contacting provider
+PASS: Localhost image publishing blocked with setup guidance
+PASS: Public enquiry redirect retains subfolder and anchor
+PASS: Logout redirects within the installation
+
+48 subfolder/social checks passed. Provider responses were simulated, not live Meta.

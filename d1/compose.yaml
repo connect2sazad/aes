@@ -1,0 +1,135 @@
+name: aanshu
+
+x-app-environment: &app-environment
+  APP_URL: ${APP_URL:-https://solar.example.com}
+  APP_PRODUCTION: "true"
+  DB_USER: aanshu_app
+  DB_PASSWORD_FILE: /run/secrets/db_password
+  APP_KEY_FILE: /run/secrets/app_key
+  CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+  META_API_VERSION: ${META_API_VERSION:-v27.0}
+
+x-app-common: &app-common
+  image: aanshu-web:local
+  build: .
+  environment: *app-environment
+  volumes:
+    - uploads:/var/www/html/storage
+  secrets:
+    - db_password
+    - app_key
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: aanshu
+      MYSQL_USER: aanshu_app
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      # Root is used only by the one-shot init tool on the isolated database network.
+      MYSQL_ROOT_HOST: "%"
+    secrets:
+      - db_password
+      - db_root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  init:
+    <<: *app-common
+    environment:
+      <<: *app-environment
+      DB_USER: root
+      DB_PASSWORD_FILE: /run/secrets/db_root_password
+    secrets:
+      - db_root_password
+      - app_key
+    command: ["sh", "-c", "php bin/install.php && php bin/upgrade.php"]
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [backend]
+    restart: "no"
+
+  app:
+    <<: *app-common
+    restart: unless-stopped
+    depends_on:
+      init: {condition: service_completed_successfully}
+    networks: [backend, edge]
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/apache2
+      - /var/lock/apache2
+    healthcheck:
+      test: ["CMD", "php", "/opt/aes/health.php"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  worker:
+    <<: *app-common
+    restart: unless-stopped
+    user: "www-data:www-data"
+    command: ["sh", "/opt/aes/worker.sh"]
+    depends_on:
+      app: {condition: service_healthy}
+    networks: [backend, edge]
+    read_only: true
+    tmpfs: [/tmp]
+    stop_grace_period: 2m
+
+  proxy:
+    image: caddy:2
+    profiles: [production]
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-solar.example.com}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    depends_on:
+      app: {condition: service_healthy}
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+volumes:
+  mysql_data:
+  uploads:
+  caddy_data:
+  caddy_config:
+
+secrets:
+  db_password: {file: ./docker/secrets/db_password.txt}
+  db_root_password: {file: ./docker/secrets/db_root_password.txt}
+  app_key: {file: ./docker/secrets/app_key.txt}
+
+networks:
+  backend: {internal: true}
+  edge:

@@ -1,0 +1,6 @@
+Options -Indexes
+# A parent directory under htdocs must never expose config, logs, sessions or ZIPs.
+# public/.htaccess explicitly grants access to the public application only.
+<IfModule mod_authz_core.c>
+ Require all denied
+</IfModule>

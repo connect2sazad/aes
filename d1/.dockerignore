@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+config.php
+storage
+tests
+work
+outputs
+docker/secrets
+*.zip
+*.sql.gz
+*.log
+*.jsonl
+*.md

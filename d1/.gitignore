@@ -1,0 +1,10 @@
+/config.php
+/storage/*
+!/storage/.gitkeep
+/vendor/
+*.zip
+
+!/storage/.htaccess
+*.jsonl
+.env
+/docker/secrets/

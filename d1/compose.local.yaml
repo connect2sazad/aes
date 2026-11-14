@@ -1,0 +1,17 @@
+# Use with: docker compose -f compose.yaml -f compose.local.yaml up -d --build
+# Do not enable the production profile for this loopback-only HTTP preview.
+services:
+  app:
+    environment:
+      APP_PRODUCTION: "false"
+      APP_URL: http://localhost:8080
+    ports:
+      - "127.0.0.1:8080:80"
+  init:
+    environment:
+      APP_PRODUCTION: "false"
+      APP_URL: http://localhost:8080
+  worker:
+    environment:
+      APP_PRODUCTION: "false"
+      APP_URL: http://localhost:8080
